@@ -1,54 +1,92 @@
 #!/bin/bash
 
-echo "1 - Buscar por nome"
-echo "2 - Buscar por conteúdo"
+while true; do
 
-read -p "Escolha uma opção: " OPCAO
+    echo "1 - Buscar por nome"
+    echo "2 - Buscar por conteúdo"
+    echo "3 - Sair"
 
-read -p "Digite o diretório: " DIRETORIO
+    read -p "Escolha uma opção: " OPCAO
 
-if [ $OPCAO -eq 1 ]
-then
-    read -p "Digite o nome do arquivo: " NOME
+    if [ $OPCAO -eq 3 ]; then
+        echo "Encerrando..."
+        break
+    fi
 
-    RESULTADO=$(find "$DIRETORIO" -name "*$NOME*")
+    while true; do
+        read -p "Digite o diretório: " DIRETORIO
 
-    TOTAL=$(echo "$RESULTADO" | wc -l)
-
-    > relatorio.txt
-
-    echo "RELATÓRIO DE BUSCA" >> relatorio.txt
-    echo "Data: $(date)" >> relatorio.txt
-    echo "Diretório: $DIRETORIO" >> relatorio.txt
-    echo "Busca por nome: $NOME" >> relatorio.txt
-    echo "Total de arquivos encontrados: $TOTAL" >> relatorio.txt
-    echo "--------------------------------" >> relatorio.txt
-
-    for ARQUIVO in $RESULTADO
-    do
-        stat --format="%n | %s bytes | %y" "$ARQUIVO" >> relatorio.txt
+        if [ -d "$DIRETORIO" ]; then
+            break
+        else
+            echo "Diretório inválido"
+        fi
     done
 
-    cat relatorio.txt
+    if [ $OPCAO -eq 1 ]; then
 
-elif [ $OPCAO -eq 2 ]
-then
-    read -p "Digite a palavra que deseja procurar: " PALAVRA
+        read -p "Digite o nome do arquivo: " NOME
 
-    RESULTADO=$(grep -r "$PALAVRA" "$DIRETORIO" 2>/dev/null)
+        RESULTADO=$(find "$DIRETORIO" -name "*$NOME*")
 
-    > relatorio.txt
+        TOTAL=$(echo "$RESULTADO" | wc -l)
 
-    echo "RELATÓRIO DE BUSCA" >> relatorio.txt
-    echo "Data: $(date)" >> relatorio.txt
-    echo "Diretório: $DIRETORIO" >> relatorio.txt
-    echo "Busca por conteúdo: $PALAVRA" >> relatorio.txt
-    echo "--------------------------------" >> relatorio.txt
+        > relatorio.txt
 
-    echo "$RESULTADO" >> relatorio.txt
+        echo "--------------------------------" >> relatorio.txt
+        echo "RELATÓRIO DE BUSCA" >> relatorio.txt
+        echo "Data: $(date)" >> relatorio.txt
+        echo "Diretório: $DIRETORIO" >> relatorio.txt
+        echo "Busca por nome: $NOME" >> relatorio.txt
+        echo "Total de arquivos encontrados: $TOTAL" >> relatorio.txt
+        echo "--------------------------------" >> relatorio.txt
 
-    cat relatorio.txt
+        SOMA=0
 
-else
-    echo "Opção inválida"
-fi
+        for ARQUIVO in $RESULTADO; do
+
+            TAMANHO=$(stat --format="%s" "$ARQUIVO")
+
+            SOMA=$((SOMA + TAMANHO))
+
+            stat --format="%n | %s bytes | %y" "$ARQUIVO" >> relatorio.txt
+
+        done
+
+        echo "--------------------------------" >> relatorio.txt
+        echo "Tamanho total: $SOMA bytes" >> relatorio.txt
+        echo "--------------------------------" >> relatorio.txt
+
+        cat relatorio.txt
+
+    elif [ $OPCAO -eq 2 ]; then
+
+        read -p "Digite a palavra que deseja procurar: " PALAVRA
+
+        RESULTADO=$(grep -r "$PALAVRA" "$DIRETORIO" 2>/dev/null)
+
+        TOTAL=$(echo "$RESULTADO" | wc -l)
+
+        > relatorio.txt
+
+        echo "--------------------------------" >> relatorio.txt
+        echo "RELATÓRIO DE BUSCA" >> relatorio.txt
+        echo "Data: $(date)" >> relatorio.txt
+        echo "Diretório: $DIRETORIO" >> relatorio.txt
+        echo "Busca por conteúdo: $PALAVRA" >> relatorio.txt
+        echo "Ocorrências encontradas: $TOTAL" >> relatorio.txt
+        echo "--------------------------------" >> relatorio.txt
+
+        echo "$RESULTADO" >> relatorio.txt
+
+        echo "--------------------------------" >> relatorio.txt
+
+        cat relatorio.txt
+
+    else
+        echo "Opção inválida"
+    fi
+
+    echo
+
+done
