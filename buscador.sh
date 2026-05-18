@@ -12,6 +12,12 @@ while true; do
 
     echo
 
+    if ! [[ "$OPCAO" =~ ^[1-3]$ ]]; then
+        echo "Opção inválida"
+        echo
+        continue
+    fi
+
     if [ $OPCAO -eq 3 ]; then
         echo "Encerrou..."
         break
