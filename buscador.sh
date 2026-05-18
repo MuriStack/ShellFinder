@@ -60,11 +60,13 @@ while true; do
 
             for ARQUIVO in $RESULTADO; do
 
+                CAMINHO=$(realpath "$ARQUIVO")
+
                 TAMANHO=$(stat --format="%s" "$ARQUIVO")
 
                 SOMA=$((SOMA + TAMANHO))
 
-                stat --format="%n | %s bytes | %y" "$ARQUIVO" >> relatorio.txt
+                stat --format="$CAMINHO | %s bytes | %y" "$ARQUIVO" >> relatorio.txt
 
             done
 
@@ -83,9 +85,9 @@ while true; do
 
         echo
 
-        RESULTADO=$(grep -r "$PALAVRA" "$DIRETORIO" 2>/dev/null)
+        RESULTADO=$(grep -rl "$PALAVRA" "$DIRETORIO" 2>/dev/null)
 
-        TOTAL=$(grep -r "$PALAVRA" "$DIRETORIO" 2>/dev/null | wc -l)
+        TOTAL=$(grep -rl "$PALAVRA" "$DIRETORIO" 2>/dev/null | wc -l)
 
         > relatorio.txt
 
@@ -94,13 +96,28 @@ while true; do
         echo "Data: $(date)" >> relatorio.txt
         echo "Diretório: $DIRETORIO" >> relatorio.txt
         echo "Busca por conteúdo: $PALAVRA" >> relatorio.txt
-        echo "Ocorrências encontradas: $TOTAL" >> relatorio.txt
+        echo "Arquivos encontrados: $TOTAL" >> relatorio.txt
+
+        SOMA=0
 
         if [ $TOTAL -gt 0 ]; then
 
             echo "--------------------------------" >> relatorio.txt
 
-            echo "$RESULTADO" >> relatorio.txt
+            for ARQUIVO in $RESULTADO; do
+
+                CAMINHO=$(realpath "$ARQUIVO")
+
+                TAMANHO=$(stat --format="%s" "$ARQUIVO")
+
+                SOMA=$((SOMA + TAMANHO))
+
+                stat --format="$CAMINHO | %s bytes | %y" "$ARQUIVO" >> relatorio.txt
+
+            done
+
+            echo "--------------------------------" >> relatorio.txt
+            echo "Tamanho total: $SOMA bytes" >> relatorio.txt
 
         fi
 
