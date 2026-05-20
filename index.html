@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Arquivos · Tema 05</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Sora:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #0d0f0e;
+      --surface:     #141716;
+      --surface2:    #1b1f1d;
+      --border:      #2a2e2c;
+      --accent:      #2dcc8f;
+      --accent-dim:  #1a7a55;
+      --accent-glow: rgba(45, 204, 143, 0.12);
+      --text:        #e8ede9;
+      --text-muted:  #7a8c82;
+      --text-faint:  #3d4840;
+      --code-kw:     #2dcc8f;
+      --code-str:    #f4845f;
+      --code-var:    #6db5f5;
+      --code-cm:     #4d5f57;
+      --font-display: 'Sora', sans-serif;
+      --font-mono:    'Space Mono', monospace;
+      --radius:      8px;
+      --radius-lg:   14px;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-display);
+      font-weight: 300;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+ 
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+ 
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 60px;
+      background: rgba(13, 15, 14, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+ 
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+ 
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+ 
+    .nav-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+ 
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+ 
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 2.5rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+ 
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--text-faint) 1px, transparent 1px),
+        linear-gradient(90deg, var(--text-faint) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+ 
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 30%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+ 
+    .hero-inner {
+      max-width: 900px;
+      position: relative;
+      z-index: 1;
+    }
+ 
+    .hero-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.1s forwards;
+    }
+ 
+    .hero-title {
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.25s forwards;
+    }
+ 
+    .hero-title span { color: var(--accent); }
+ 
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.4s forwards;
+    }
+ 
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.55s forwards;
+    }
+ 
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      padding: 0.75rem 1.75rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+ 
+    .btn-primary {
+      background: var(--accent);
+      color: #0a1a12;
+      border: none;
+      font-weight: 700;
+    }
+ 
+    .btn-primary:hover {
+      background: #38e8a4;
+      text-decoration: none;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(45,204,143,0.3);
+    }
+ 
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+ 
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      text-decoration: none;
+    }
+ 
+    section {
+      padding: 6rem 2.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+ 
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+ 
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+ 
+    .section-sub {
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      font-size: 0.95rem;
+    }
+ 
+    /* EQUIPE */
+    .team-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+ 
+    .team-item {
+      background: var(--surface);
+      padding: 1.5rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      transition: background 0.2s;
+    }
+ 
+    .team-item:hover { background: var(--surface2); }
+ 
+    .team-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      min-width: 28px;
+    }
+ 
+    /* CONTEXTUALIZAÇÃO */
+    .context-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2.5rem;
+    }
+ 
+    .context-box p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.9;
+    }
+ 
+    .context-box strong { color: var(--text); font-weight: 600; }
+ 
+    /* CÓDIGO */
+    .code-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+ 
+    pre {
+      padding: 1.75rem 2rem;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 2;
+      overflow-x: auto;
+    }
+ 
+    .kw  { color: var(--code-kw); }
+    .st  { color: var(--code-str); }
+    .va  { color: var(--code-var); }
+    .cm  { color: var(--code-cm); font-style: italic; }
+ 
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-faint);
+      letter-spacing: 0.05em;
+    }
+ 
+    footer span { color: var(--accent); }
+ 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+ 
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+ 
+    @media (max-width: 640px) {
+      nav { padding: 0 1.25rem; }
+      .nav-links { display: none; }
+      .hero { padding: 6rem 1.25rem 3rem; }
+      section { padding: 4rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+ 
+  <nav>
+    <div class="nav-logo">./buscador.sh</div>
+    <ul class="nav-links">
+      <li><a href="#equipe">equipe</a></li>
+      <li><a href="#contexto">contexto</a></li>
+      <li><a href="#codigo">código</a></li>
+    </ul>
+  </nav>
+ 
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag">Sistemas Operacionais · Tema 05</div>
+      <h1 class="hero-title">
+        Buscador e<br>
+        <span>relatório</span><br>
+        de arquivos
+      </h1>
+      <p class="hero-desc">
+        Script Bash que localiza arquivos por nome ou conteúdo dentro de um diretório
+        e gera automaticamente um relatório detalhado em <code style="font-family:var(--font-mono);font-size:0.85em;color:var(--accent)">.txt</code>.
+      </p>
+      <div class="hero-actions">
+        <a href="#equipe" class="btn btn-primary">ver apresentação</a>
+        <a href="#codigo" class="btn btn-ghost">ir para o código</a>
+      </div>
+    </div>
+  </header>
+ 
+  <!-- EQUIPE -->
+  <section id="equipe">
+    <div class="reveal">
+      <div class="section-tag">Equipe</div>
+      <h2 class="section-title">Integrantes</h2>
+    </div>
+    <div class="team-list reveal">
+      <div class="team-item"><span class="team-num">01</span>Caio Salgado</div>
+      <div class="team-item"><span class="team-num">02</span>Murilo Belizário</div>
+      <div class="team-item"><span class="team-num">03</span>Wilson Souza</div>
+    </div>
+  </section>
+ 
+  <!-- CONTEXTUALIZAÇÃO -->
+  <section id="contexto">
+    <div class="reveal">
+      <div class="section-tag">Contextualização</div>
+      <h2 class="section-title">O que é e por que existe</h2>
+      <p class="section-sub">Apresentação do tema e sua relação com Sistemas Operacionais.</p>
+    </div>
+    <div class="context-box reveal">
+      <p>
+        Um <strong>buscador de arquivos</strong> é uma ferramenta que percorre o sistema de arquivos de forma automatizada,
+        localizando itens por nome ou pelo conteúdo armazenado dentro deles.
+        Ele existe porque, à medida que sistemas crescem, encontrar manualmente arquivos em árvores de diretórios
+        se torna inviável — seja para um administrador de sistema, um desenvolvedor ou um usuário comum.
+        O script resolve dois problemas centrais: <strong>localização por padrão de nome</strong>
+        (usando curingas) e <strong>localização por conteúdo</strong> (pesquisando texto dentro dos arquivos),
+        gerando ao final um relatório consolidado com metadados de cada resultado.
+        <br><br>
+        O tema se conecta diretamente ao funcionamento dos sistemas operacionais.
+        A leitura de diretórios, o acesso a metadados e a leitura de conteúdo de arquivos
+        são operações intermediadas pelo <strong>kernel</strong>, que gerencia permissões de acesso,
+        alocação de memória para buffers e o escalonamento de operações de disco —
+        ilustrando como o SO atua como camada entre o programa e o hardware de armazenamento.
+        Cada comando executado gera um <strong>processo filho</strong>,
+        o resultado é gravado via <strong>gerência de I/O</strong>,
+        e o acesso aos arquivos depende da organização do <strong>sistema de arquivos</strong>,
+        conectando o tema aos demais assuntos da disciplina.
+      </p>
+    </div>
+  </section>
+ 
+  <!-- CÓDIGO -->
+  <section id="codigo">
+    <div class="reveal">
+      <div class="section-tag">Código</div>
+      <h2 class="section-title">Implementação</h2>
+      <p class="section-sub">Script dividido em três partes.</p>
+    </div>
+ 
+    <!-- Parte 1: menu e validações -->
+    <div class="code-block reveal" style="margin-bottom: 1.5rem;">
+      <pre><span class="cm">#!/bin/bash</span>
+<span class="kw">while</span> true; <span class="kw">do</span>
+    echo <span class="st">"1 - Buscar por nome"</span>
+    echo <span class="st">"2 - Buscar por conteúdo"</span>
+    echo <span class="st">"3 - Sair"</span>
+    echo
+    read -p <span class="st">"Escolha uma opção: "</span> <span class="va">OPCAO</span>
+    echo
+    <span class="kw">if</span> ! [[ <span class="st">"$OPCAO"</span> =~ ^[1-3]$ ]]; <span class="kw">then</span>
+        echo <span class="st">"Opção inválida"</span>
+        echo
+        <span class="kw">continue</span>
+    <span class="kw">fi</span>
+    <span class="kw">if</span> [ <span class="va">$OPCAO</span> -eq 3 ]; <span class="kw">then</span>
+        echo <span class="st">"Encerrou..."</span>
+        <span class="kw">break</span>
+    <span class="kw">fi</span>
+    read -p <span class="st">"Digite o diretório: "</span> <span class="va">DIRETORIO</span>
+    echo
+    <span class="kw">if</span> [ ! -d <span class="st">"$DIRETORIO"</span> ]; <span class="kw">then</span>
+        echo <span class="st">"Diretório inválido"</span>
+        echo
+        <span class="kw">continue</span>
+    <span class="kw">fi</span></pre>
+    </div>
+ 
+    <!-- Parte 2: busca por nome -->
+    <div class="code-block reveal" style="margin-bottom: 1.5rem;">
+      <pre>    <span class="kw">if</span> [ <span class="va">$OPCAO</span> -eq 1 ]; <span class="kw">then</span>
+        read -p <span class="st">"Digite o nome do arquivo: "</span> <span class="va">NOME</span>
+        echo
+        <span class="va">RESULTADO</span>=$(find <span class="st">"$DIRETORIO"</span> -name <span class="st">"$NOME"</span>)
+        <span class="va">TOTAL</span>=$(find <span class="st">"$DIRETORIO"</span> -name <span class="st">"$NOME"</span> | wc -l)
+        &gt; relatorio.txt
+        echo <span class="st">"--------------------------------"</span> &gt;&gt; relatorio.txt
+        echo <span class="st">"RELATÓRIO DE BUSCA"</span>          &gt;&gt; relatorio.txt
+        echo <span class="st">"Data: $(date)"</span>               &gt;&gt; relatorio.txt
+        echo <span class="st">"Diretório: $DIRETORIO"</span>       &gt;&gt; relatorio.txt
+        echo <span class="st">"Busca por nome: $NOME"</span>       &gt;&gt; relatorio.txt
+        echo <span class="st">"Total de arquivos encontrados: $TOTAL"</span> &gt;&gt; relatorio.txt
+        <span class="va">SOMA</span>=0
+        <span class="kw">if</span> [ <span class="va">$TOTAL</span> -gt 0 ]; <span class="kw">then</span>
+            echo <span class="st">"--------------------------------"</span> &gt;&gt; relatorio.txt
+            <span class="kw">for</span> <span class="va">ARQUIVO</span> <span class="kw">in</span> <span class="va">$RESULTADO</span>; <span class="kw">do</span>
+                <span class="va">CAMINHO</span>=$(realpath <span class="st">"$ARQUIVO"</span>)
+                <span class="va">TAMANHO</span>=$(stat --format=<span class="st">"%s"</span> <span class="st">"$ARQUIVO"</span>)
+                <span class="va">SOMA</span>=$((<span class="va">SOMA</span> + <span class="va">TAMANHO</span>))
+                stat --format=<span class="st">"$CAMINHO | %s bytes | %y"</span> <span class="st">"$ARQUIVO"</span> &gt;&gt; relatorio.txt
+            <span class="kw">done</span>
+            echo <span class="st">"--------------------------------"</span> &gt;&gt; relatorio.txt
+            echo <span class="st">"Tamanho total: $SOMA bytes"</span>  &gt;&gt; relatorio.txt
+        <span class="kw">fi</span>
+        echo <span class="st">"--------------------------------"</span> &gt;&gt; relatorio.txt
+        cat relatorio.txt</pre>
+    </div>
+ 
+    <!-- Parte 3: busca por conteúdo + fim -->
+    <div class="code-block reveal">
+      <pre>    <span class="kw">elif</span> [ <span class="va">$OPCAO</span> -eq 2 ]; <span class="kw">then</span>
+        read -p <span class="st">"Digite a palavra que deseja procurar: "</span> <span class="va">PALAVRA</span>
+        echo
+        <span class="va">RESULTADO</span>=$(grep -rl <span class="st">"$PALAVRA"</span> <span class="st">"$DIRETORIO"</span> 2&gt;/dev/null)
+        <span class="va">TOTAL</span>=$(grep -rl <span class="st">"$PALAVRA"</span> <span class="st">"$DIRETORIO"</span> 2&gt;/dev/null | wc -l)
+        &gt; relatorio.txt
+        echo <span class="st">"--------------------------------"</span>       &gt;&gt; relatorio.txt
+        echo <span class="st">"RELATÓRIO DE BUSCA"</span>                   &gt;&gt; relatorio.txt
+        echo <span class="st">"Data: $(date)"</span>                        &gt;&gt; relatorio.txt
+        echo <span class="st">"Diretório: $DIRETORIO"</span>                &gt;&gt; relatorio.txt
+        echo <span class="st">"Busca por conteúdo: $PALAVRA"</span>         &gt;&gt; relatorio.txt
+        echo <span class="st">"Arquivos encontrados: $TOTAL"</span>         &gt;&gt; relatorio.txt
+        <span class="va">SOMA</span>=0
+        <span class="kw">if</span> [ <span class="va">$TOTAL</span> -gt 0 ]; <span class="kw">then</span>
+            echo <span class="st">"--------------------------------"</span> &gt;&gt; relatorio.txt
+            <span class="kw">for</span> <span class="va">ARQUIVO</span> <span class="kw">in</span> <span class="va">$RESULTADO</span>; <span class="kw">do</span>
+                <span class="va">CAMINHO</span>=$(realpath <span class="st">"$ARQUIVO"</span>)
+                <span class="va">TAMANHO</span>=$(stat --format=<span class="st">"%s"</span> <span class="st">"$ARQUIVO"</span>)
+                <span class="va">SOMA</span>=$((<span class="va">SOMA</span> + <span class="va">TAMANHO</span>))
+                stat --format=<span class="st">"$CAMINHO | %s bytes | %y"</span> <span class="st">"$ARQUIVO"</span> &gt;&gt; relatorio.txt
+            <span class="kw">done</span>
+            echo <span class="st">"--------------------------------"</span> &gt;&gt; relatorio.txt
+            echo <span class="st">"Tamanho total: $SOMA bytes"</span>  &gt;&gt; relatorio.txt
+        <span class="kw">fi</span>
+        echo <span class="st">"--------------------------------"</span> &gt;&gt; relatorio.txt
+        cat relatorio.txt
+    <span class="kw">fi</span>
+    echo
+<span class="kw">done</span></pre>
+    </div>
+ 
+  </section>
+ 
+  <footer>
+    <span>./buscador.sh</span> · Sistemas Operacionais · Tema 05
+  </footer>
+ 
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+ 
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+ 
+</body>
+</html>
