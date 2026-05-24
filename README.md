@@ -1,10 +1,10 @@
-#🔍 Buscador de Arquivos em Shell Script
+# 🔍 Buscador de Arquivos em Shell Script
 
 Projeto desenvolvido em Bash Script com o objetivo de automatizar buscas de arquivos no Linux, permitindo localizar arquivos tanto pelo nome quanto pelo conteúdo interno, além de gerar relatórios detalhados automaticamente.
 
 ---
 
-##🚀 Funcionalidades
+## 🚀 Funcionalidades
 
 - ✅ Busca de arquivos por nome
 - ✅ Busca de arquivos por conteúdo textual
@@ -19,7 +19,7 @@ Projeto desenvolvido em Bash Script com o objetivo de automatizar buscas de arqu
   
 ---
 
-#📄 Relatório gerado
+# 📄 Relatório gerado
 
 O sistema cria automaticamente um arquivo:
 ```
@@ -37,7 +37,7 @@ contendo:
 - 📦 Espaço total ocupado
 ---
 
-##▶️ Como executar
+## ▶️ Como executar
 
 Primeiro dê permissão de execução ao script:
 
@@ -52,7 +52,7 @@ Depois execute:
 ```
 ---
 
-##🖥️ Exemplo do menu
+## 🖥️ Exemplo do menu
 
 ```
 1 - Buscar por nome
@@ -61,7 +61,7 @@ Depois execute:
 ```
 ---
 
-##🎯 Objetivo do projeto
+## 🎯 Objetivo do projeto
 
 Este projeto foi desenvolvido para praticar:
 
