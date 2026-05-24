@@ -19,7 +19,7 @@ Projeto desenvolvido em Bash Script com o objetivo de automatizar buscas de arqu
   
 ##
 
-# 📄 Relatório gerado
+## 📄 Relatório gerado
 
 O sistema cria automaticamente um arquivo:
 ```
