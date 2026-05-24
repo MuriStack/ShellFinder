@@ -2,7 +2,7 @@
 
 Projeto desenvolvido em Bash Script com o objetivo de automatizar buscas de arquivos no Linux, permitindo localizar arquivos tanto pelo nome quanto pelo conteúdo interno, além de gerar relatórios detalhados automaticamente.
 
----
+##
 
 ## 🚀 Funcionalidades
 
@@ -17,7 +17,7 @@ Projeto desenvolvido em Bash Script com o objetivo de automatizar buscas de arqu
 - ✅ Menu interativo no terminal
 - ✅ Validação de entradas e diretórios
   
----
+##
 
 # 📄 Relatório gerado
 
@@ -35,7 +35,8 @@ contendo:
 - 💾 Tamanho dos arquivos
 - 🕒 Data de modificação
 - 📦 Espaço total ocupado
----
+
+##
 
 ## ▶️ Como executar
 
@@ -50,7 +51,7 @@ Depois execute:
 ```Bash
 ./buscador.sh
 ```
----
+##
 
 ## 🖥️ Exemplo do menu
 
@@ -59,7 +60,7 @@ Depois execute:
 2 - Buscar por conteúdo
 3 - Sair
 ```
----
+##
 
 ## 🎯 Objetivo do projeto
 
