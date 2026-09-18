@@ -7,7 +7,7 @@ Projeto desenvolvido em Bash Script com o objetivo de automatizar buscas de arqu
 ## 📥 Clonando o repositório
 
 ```bash
-git clone https://github.com/SEU-USUARIO/ShellFinder.git
+git clone https://github.com/MuriStack/ShellFinder.git
 ```
 
 Entre na pasta do projeto:
